@@ -1,5 +1,5 @@
-import { useRef, useState } from "react";
-import { Copy, Check } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Copy, Check, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import Slot, { SlotHandle } from "@/components/Slot";
 import RoughBorder from "@/components/RoughBorder";
@@ -34,6 +34,23 @@ const Index = () => {
   const [spinning, setSpinning] = useState(false);
   const [revealKey, setRevealKey] = useState(0);
   const [copied, setCopied] = useState(false);
+  const [generateCount, setGenerateCount] = useState(0);
+  const pageLoadTime = useRef<number>(performance.now());
+
+  // Track time spent on page when user leaves without generating
+  useEffect(() => {
+    const handleUnload = () => {
+      if (generateCount === 0) {
+        const seconds = Math.round((performance.now() - pageLoadTime.current) / 1000);
+        trackEvent("left_without_generating", {
+          event_category: "engagement",
+          time_on_page_seconds: seconds,
+        });
+      }
+    };
+    window.addEventListener("pagehide", handleUnload);
+    return () => window.removeEventListener("pagehide", handleUnload);
+  }, [generateCount]);
 
   const handleCopy = async () => {
     if (!sentence) return;
@@ -48,9 +65,47 @@ const Index = () => {
     }
   };
 
+  const handleShare = async () => {
+    const shareUrl = window.location.href;
+    const shareText = sentence
+      ? `What should I draw? "${sentence}" — generate your own:`
+      : "What should I draw? A weird drawing prompt generator:";
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "What should I draw?", text: shareText, url: shareUrl });
+        trackEvent("share_click", { event_category: "engagement", method: "web_share", has_prompt: !!sentence });
+      } catch {
+        // User dismissed — don't track
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+        toast.success("Share link copied!");
+        trackEvent("share_click", { event_category: "engagement", method: "clipboard", has_prompt: !!sentence });
+      } catch {
+        toast.error("Couldn't copy share link");
+      }
+    }
+  };
+
   const handleGenerate = async () => {
     if (spinning) return;
-    trackEvent("generate_prompt", { event_category: "engagement" });
+
+    // Track time-to-first-generate (only on the first click of the session)
+    if (generateCount === 0) {
+      const secondsToFirstGenerate = Math.round((performance.now() - pageLoadTime.current) / 1000);
+      trackEvent("first_generate", {
+        event_category: "engagement",
+        seconds_to_first_generate: secondsToFirstGenerate,
+      });
+    }
+
+    trackEvent("generate_prompt", {
+      event_category: "engagement",
+      generate_index: generateCount + 1,
+    });
+    setGenerateCount((c) => c + 1);
     setSpinning(true);
     setSentence(null);
 
@@ -183,20 +238,30 @@ const Index = () => {
                 </svg>
               </p>
 
-              <button
-                onClick={handleCopy}
-                className="mt-4 inline-flex items-center gap-1.5 font-patrick text-ink/70 hover:text-ink text-base md:text-lg transition-colors group"
-                aria-label="Copy prompt to clipboard"
-              >
-                {copied ? (
-                  <Check className="w-4 h-4" />
-                ) : (
-                  <Copy className="w-4 h-4 group-hover:-rotate-6 transition-transform" />
-                )}
-                <span className="underline decoration-dotted underline-offset-4">
-                  {copied ? "copied!" : "copy prompt"}
-                </span>
-              </button>
+              <div className="mt-4 flex items-center justify-center gap-5">
+                <button
+                  onClick={handleCopy}
+                  className="inline-flex items-center gap-1.5 font-patrick text-ink/70 hover:text-ink text-base md:text-lg transition-colors group"
+                  aria-label="Copy prompt to clipboard"
+                >
+                  {copied ? (
+                    <Check className="w-4 h-4" />
+                  ) : (
+                    <Copy className="w-4 h-4 group-hover:-rotate-6 transition-transform" />
+                  )}
+                  <span className="underline decoration-dotted underline-offset-4">
+                    {copied ? "copied!" : "copy prompt"}
+                  </span>
+                </button>
+                <button
+                  onClick={handleShare}
+                  className="inline-flex items-center gap-1.5 font-patrick text-ink/70 hover:text-ink text-base md:text-lg transition-colors group"
+                  aria-label="Share prompt"
+                >
+                  <Share2 className="w-4 h-4 group-hover:rotate-6 transition-transform" />
+                  <span className="underline decoration-dotted underline-offset-4">share</span>
+                </button>
+              </div>
             </div>
           )}
         </section>
