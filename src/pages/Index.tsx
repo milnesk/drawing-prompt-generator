@@ -155,6 +155,20 @@ const Index = () => {
                   opacity="0.5"
                 />
               </svg>
+              <button
+                onClick={handleCopy}
+                className="mt-3 inline-flex items-center gap-1.5 font-patrick text-ink/70 hover:text-ink text-base md:text-lg transition-colors group"
+                aria-label="Copy prompt to clipboard"
+              >
+                {copied ? (
+                  <Check className="w-4 h-4" />
+                ) : (
+                  <Copy className="w-4 h-4 group-hover:-rotate-6 transition-transform" />
+                )}
+                <span className="underline decoration-dotted underline-offset-4">
+                  {copied ? "copied!" : "copy prompt"}
+                </span>
+              </button>
             </div>
           )}
         </section>
