@@ -164,7 +164,7 @@ const Index = () => {
               <p className="relative inline-block font-caveat text-2xl md:text-3xl text-ink leading-snug px-2">
                 <span
                   aria-hidden="true"
-                  className="absolute inset-x-0 top-[35%] bottom-[10%] -rotate-[0.6deg]"
+                  className="absolute inset-x-0 top-[10%] bottom-[8%] -rotate-[0.6deg]"
                   style={{
                     background:
                       "linear-gradient(100deg, hsl(var(--accent-ink) / 0) 0%, hsl(var(--accent-ink) / 0.22) 8%, hsl(var(--accent-ink) / 0.28) 92%, hsl(var(--accent-ink) / 0) 100%)",
