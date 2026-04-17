@@ -238,20 +238,30 @@ const Index = () => {
                 </svg>
               </p>
 
-              <button
-                onClick={handleCopy}
-                className="mt-4 inline-flex items-center gap-1.5 font-patrick text-ink/70 hover:text-ink text-base md:text-lg transition-colors group"
-                aria-label="Copy prompt to clipboard"
-              >
-                {copied ? (
-                  <Check className="w-4 h-4" />
-                ) : (
-                  <Copy className="w-4 h-4 group-hover:-rotate-6 transition-transform" />
-                )}
-                <span className="underline decoration-dotted underline-offset-4">
-                  {copied ? "copied!" : "copy prompt"}
-                </span>
-              </button>
+              <div className="mt-4 flex items-center justify-center gap-5">
+                <button
+                  onClick={handleCopy}
+                  className="inline-flex items-center gap-1.5 font-patrick text-ink/70 hover:text-ink text-base md:text-lg transition-colors group"
+                  aria-label="Copy prompt to clipboard"
+                >
+                  {copied ? (
+                    <Check className="w-4 h-4" />
+                  ) : (
+                    <Copy className="w-4 h-4 group-hover:-rotate-6 transition-transform" />
+                  )}
+                  <span className="underline decoration-dotted underline-offset-4">
+                    {copied ? "copied!" : "copy prompt"}
+                  </span>
+                </button>
+                <button
+                  onClick={handleShare}
+                  className="inline-flex items-center gap-1.5 font-patrick text-ink/70 hover:text-ink text-base md:text-lg transition-colors group"
+                  aria-label="Share prompt"
+                >
+                  <Share2 className="w-4 h-4 group-hover:rotate-6 transition-transform" />
+                  <span className="underline decoration-dotted underline-offset-4">share</span>
+                </button>
+              </div>
             </div>
           )}
         </section>
