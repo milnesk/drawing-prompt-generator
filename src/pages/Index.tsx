@@ -79,10 +79,26 @@ const Index = () => {
               fill="none"
             />
           </svg>
-          <p className="font-patrick text-ink/60 mt-3 text-base md:text-lg">
-            spin the reels for a weird little drawing idea
-          </p>
         </header>
+
+        {/* Generate button */}
+        <button
+          onClick={handleGenerate}
+          disabled={spinning}
+          className="group relative disabled:opacity-80 mb-8"
+          aria-label="Generate prompt"
+        >
+          <RoughBorder
+            radius={999}
+            strokeWidth={2.5}
+            doubled
+            className="px-10 py-3 md:px-14 md:py-4 bg-ink/10 hover:bg-ink/15 transition-all duration-200 group-hover:-rotate-1 group-active:scale-95"
+          >
+            <span className="font-caveat text-3xl md:text-4xl text-ink">
+              {spinning ? "spinning…" : "Generate prompt"}
+            </span>
+          </RoughBorder>
+        </button>
 
         {/* Slots */}
         <section className="w-full grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-5 mb-8">
@@ -126,28 +142,6 @@ const Index = () => {
           )}
         </section>
 
-        {/* Generate button */}
-        <button
-          onClick={handleGenerate}
-          disabled={spinning}
-          className="group relative disabled:opacity-80"
-          aria-label="Generate prompt"
-        >
-          <RoughBorder
-            radius={999}
-            strokeWidth={2.5}
-            doubled
-            className="px-10 py-3 md:px-14 md:py-4 transition-transform duration-200 group-hover:-rotate-1 group-active:scale-95"
-          >
-            <span className="font-caveat text-3xl md:text-4xl text-ink">
-              {spinning ? "spinning…" : "Generate prompt"}
-            </span>
-          </RoughBorder>
-        </button>
-
-        <footer className="mt-10 font-patrick text-ink/50 text-sm">
-          tap generate as many times as you like ✦
-        </footer>
       </div>
     </main>
   );
