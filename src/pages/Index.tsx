@@ -132,32 +132,60 @@ const Index = () => {
         </section>
 
         {/* Assembled sentence */}
-        <section className="w-full min-h-[5rem] mb-8 flex items-center justify-center">
+        <section className="w-full min-h-[5rem] mb-8 flex flex-col items-center justify-center">
           {sentence && (
-            <div key={revealKey} className="animate-fade-in text-center px-2">
-              <p className="font-caveat text-2xl md:text-3xl text-ink leading-snug">
-                {sentence}
-              </p>
-              <svg
-                className="mx-auto mt-2"
-                width="220"
-                height="10"
-                viewBox="0 0 220 10"
-                fill="none"
-                aria-hidden="true"
-              >
-                <path
-                  d="M3 6 C 60 1, 130 9, 217 4"
-                  stroke="hsl(var(--ink))"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  fill="none"
-                  opacity="0.5"
+            <div key={revealKey} className="animate-fade-in text-center px-2 w-full">
+              {/* Wobbly divider with ✎ marker */}
+              <div className="flex items-center justify-center gap-2 mb-5">
+                <svg width="120" height="8" viewBox="0 0 120 8" fill="none" aria-hidden="true">
+                  <path
+                    d="M2 4 C 25 1, 50 7, 75 3 S 110 6, 118 4"
+                    stroke="hsl(var(--ink))"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    fill="none"
+                    opacity="0.4"
+                  />
+                </svg>
+                <span className="font-caveat text-xl leading-none -mt-1 text-ink/60" aria-hidden="true">✎</span>
+                <svg width="120" height="8" viewBox="0 0 120 8" fill="none" aria-hidden="true">
+                  <path
+                    d="M2 4 C 25 7, 50 1, 75 5 S 110 2, 118 4"
+                    stroke="hsl(var(--ink))"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    fill="none"
+                    opacity="0.4"
+                  />
+                </svg>
+              </div>
+
+              {/* Sentence with highlighter swipe behind */}
+              <p className="relative inline-block font-caveat text-2xl md:text-3xl text-ink leading-snug px-2">
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-x-0 top-[35%] bottom-[10%] -rotate-[0.6deg]"
+                  style={{
+                    background:
+                      "linear-gradient(100deg, hsl(var(--accent-ink) / 0) 0%, hsl(var(--accent-ink) / 0.22) 8%, hsl(var(--accent-ink) / 0.28) 92%, hsl(var(--accent-ink) / 0) 100%)",
+                    filter: "url(#highlighter-rough)",
+                    zIndex: 0,
+                  }}
                 />
-              </svg>
+                <span className="relative z-10">{sentence}</span>
+                <svg width="0" height="0" className="absolute" aria-hidden="true">
+                  <defs>
+                    <filter id="highlighter-rough">
+                      <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="5" />
+                      <feDisplacementMap in="SourceGraphic" scale="3" />
+                    </filter>
+                  </defs>
+                </svg>
+              </p>
+
               <button
                 onClick={handleCopy}
-                className="mt-3 inline-flex items-center gap-1.5 font-patrick text-ink/70 hover:text-ink text-base md:text-lg transition-colors group"
+                className="mt-4 inline-flex items-center gap-1.5 font-patrick text-ink/70 hover:text-ink text-base md:text-lg transition-colors group"
                 aria-label="Copy prompt to clipboard"
               >
                 {copied ? (
