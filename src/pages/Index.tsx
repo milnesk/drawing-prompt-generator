@@ -34,6 +34,23 @@ const Index = () => {
   const [spinning, setSpinning] = useState(false);
   const [revealKey, setRevealKey] = useState(0);
   const [copied, setCopied] = useState(false);
+  const [generateCount, setGenerateCount] = useState(0);
+  const pageLoadTime = useRef<number>(performance.now());
+
+  // Track time spent on page when user leaves without generating
+  useEffect(() => {
+    const handleUnload = () => {
+      if (generateCount === 0) {
+        const seconds = Math.round((performance.now() - pageLoadTime.current) / 1000);
+        trackEvent("left_without_generating", {
+          event_category: "engagement",
+          time_on_page_seconds: seconds,
+        });
+      }
+    };
+    window.addEventListener("pagehide", handleUnload);
+    return () => window.removeEventListener("pagehide", handleUnload);
+  }, [generateCount]);
 
   const handleCopy = async () => {
     if (!sentence) return;
@@ -48,9 +65,47 @@ const Index = () => {
     }
   };
 
+  const handleShare = async () => {
+    const shareUrl = window.location.href;
+    const shareText = sentence
+      ? `What should I draw? "${sentence}" — generate your own:`
+      : "What should I draw? A weird drawing prompt generator:";
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "What should I draw?", text: shareText, url: shareUrl });
+        trackEvent("share_click", { event_category: "engagement", method: "web_share", has_prompt: !!sentence });
+      } catch {
+        // User dismissed — don't track
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+        toast.success("Share link copied!");
+        trackEvent("share_click", { event_category: "engagement", method: "clipboard", has_prompt: !!sentence });
+      } catch {
+        toast.error("Couldn't copy share link");
+      }
+    }
+  };
+
   const handleGenerate = async () => {
     if (spinning) return;
-    trackEvent("generate_prompt", { event_category: "engagement" });
+
+    // Track time-to-first-generate (only on the first click of the session)
+    if (generateCount === 0) {
+      const secondsToFirstGenerate = Math.round((performance.now() - pageLoadTime.current) / 1000);
+      trackEvent("first_generate", {
+        event_category: "engagement",
+        seconds_to_first_generate: secondsToFirstGenerate,
+      });
+    }
+
+    trackEvent("generate_prompt", {
+      event_category: "engagement",
+      generate_index: generateCount + 1,
+    });
+    setGenerateCount((c) => c + 1);
     setSpinning(true);
     setSentence(null);
 
