@@ -92,7 +92,8 @@ const Index = () => {
             radius={999}
             strokeWidth={2.5}
             doubled
-            className="px-10 py-3 md:px-14 md:py-4 bg-ink/10 hover:bg-ink/15 transition-all duration-200 group-hover:-rotate-1 group-active:scale-95"
+            fill="hsl(var(--ink) / 0.08)"
+            className="px-10 py-3 md:px-14 md:py-4 transition-transform duration-200 group-hover:-rotate-1 group-active:scale-95"
           >
             <span className="font-caveat text-3xl md:text-4xl text-ink">
               {spinning ? "spinning…" : "Generate prompt"}

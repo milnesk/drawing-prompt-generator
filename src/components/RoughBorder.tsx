@@ -3,24 +3,20 @@ import { ReactNode } from "react";
 interface RoughBorderProps {
   children: ReactNode;
   className?: string;
-  /** Stroke width of the hand-drawn border */
   strokeWidth?: number;
-  /** Border radius for the rect */
   radius?: number;
-  /** Render a doubled stroke (sketchy double-line look) */
   doubled?: boolean;
+  /** Fill color for the border shape (e.g. "hsl(var(--ink) / 0.1)") */
+  fill?: string;
 }
 
-/**
- * Wraps children in an SVG hand-drawn border using a turbulence filter.
- * The SVG sits absolutely behind the content.
- */
 export const RoughBorder = ({
   children,
   className = "",
   strokeWidth = 2,
   radius = 8,
   doubled = false,
+  fill = "none",
 }: RoughBorderProps) => {
   const filterId = `rough-${Math.random().toString(36).slice(2, 9)}`;
   return (
@@ -43,7 +39,7 @@ export const RoughBorder = ({
           height={`calc(100% - ${strokeWidth * 2}px)`}
           rx={radius}
           ry={radius}
-          fill="none"
+          fill={fill}
           stroke="hsl(var(--ink))"
           strokeWidth={strokeWidth}
           strokeLinecap="round"
