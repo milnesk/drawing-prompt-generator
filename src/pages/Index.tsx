@@ -1,4 +1,6 @@
 import { useRef, useState } from "react";
+import { Copy, Check } from "lucide-react";
+import { toast } from "sonner";
 import Slot, { SlotHandle } from "@/components/Slot";
 import RoughBorder from "@/components/RoughBorder";
 import {
@@ -31,6 +33,20 @@ const Index = () => {
   const [sentence, setSentence] = useState<string | null>(null);
   const [spinning, setSpinning] = useState(false);
   const [revealKey, setRevealKey] = useState(0);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    if (!sentence) return;
+    try {
+      await navigator.clipboard.writeText(sentence);
+      setCopied(true);
+      toast.success("Prompt copied!");
+      trackEvent("copy_prompt", { event_category: "engagement" });
+      setTimeout(() => setCopied(false), 1800);
+    } catch {
+      toast.error("Couldn't copy — try again");
+    }
+  };
 
   const handleGenerate = async () => {
     if (spinning) return;
