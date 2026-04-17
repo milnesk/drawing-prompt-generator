@@ -1,5 +1,5 @@
-import { useRef, useState } from "react";
-import { Copy, Check } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Copy, Check, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import Slot, { SlotHandle } from "@/components/Slot";
 import RoughBorder from "@/components/RoughBorder";
